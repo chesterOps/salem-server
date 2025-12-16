@@ -10,7 +10,7 @@ import {
 } from "../utils/token";
 
 // Verify front url
-if (!process.env.FRONT_URL) {
+if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
   throw new Error(
     "ACCESS_TOKEN_SECRET OR REFRESH_TOKEN_SECRET not set in environment variables"
   );
