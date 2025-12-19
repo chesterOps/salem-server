@@ -10,7 +10,7 @@ import {
   updateProduct,
 } from "../controllers/product.controller";
 import { authorize, protect } from "../middlewares/auth.middleware";
-import { setImages } from "../middlewares/image";
+import { uploadImages } from "../middlewares/image";
 
 // Product router
 const Router = express.Router();
@@ -25,7 +25,7 @@ Router.route("/")
     protect,
     authorize("admin"),
     upload.array("images"),
-    setImages,
+    uploadImages,
     createProduct
   );
 
@@ -36,7 +36,7 @@ Router.route("/:id")
     protect,
     authorize("admin"),
     upload.array("images"),
-    setImages,
+    uploadImages,
     updateProduct
   );
 

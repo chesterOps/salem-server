@@ -2,27 +2,27 @@ import multer from "multer";
 import cloudinary from "../config/cloudinary";
 import CloudinaryStorage from "multer-storage-cloudinary";
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (_req: Express.Request, file: Express.Multer.File) => {
-    // Split file name by "." to remove extension
-    const fileName = file.originalname.split(".");
+// const storage = new CloudinaryStorage({
+//   cloudinary,
+//   params: async (_req: Express.Request, file: Express.Multer.File) => {
+//     // Split file name by "." to remove extension
+//     const fileName = file.originalname.split(".");
 
-    // Remove the last part (extension)
-    fileName.pop();
+//     // Remove the last part (extension)
+//     fileName.pop();
 
-    const timestamp = Date.now();
+//     const timestamp = Date.now();
 
-    return {
-      folder: "salem",
-      allowed_formats: ["jpg", "png", "jpeg"],
-      public_id: `${timestamp}-${fileName.join("")}`,
-      format: file.originalname.split(".").pop(),
-    };
-  },
-});
+//     return {
+//       folder: "salem",
+//       allowed_formats: ["jpg", "png", "jpeg"],
+//       public_id: `${timestamp}-${fileName.join("")}`,
+//       format: file.originalname.split(".").pop(),
+//     };
+//   },
+// });
 
 // Multer middleware using Cloudinary storage
-const upload = multer({ storage });
+const upload = multer({ storage: multer.memoryStorage() });
 
 export default upload;
