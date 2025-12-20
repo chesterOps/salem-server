@@ -27,7 +27,12 @@ export default class ApiFeatures {
 
       // Add Search to query
       this.query = this.query.find({
-        [this.searchField]: { $regex: search, $options: "i" },
+        $or: [
+          { [this.searchField]: { $regex: search, $options: "i" } },
+          {
+            tag: { $regex: search, $options: "i" },
+          },
+        ],
       });
     }
     return this;
