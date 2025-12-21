@@ -15,7 +15,7 @@ import { uploadImages } from "../middlewares/image";
 // Product router
 const Router = express.Router();
 
-Router.get("/related/:id", getRelatedProducts);
+Router.get("/:id/related", getRelatedProducts);
 
 Router.get("/category/:slug", getProductsByCategory);
 

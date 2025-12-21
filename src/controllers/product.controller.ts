@@ -109,12 +109,16 @@ export const getRelatedProducts = catchAsync(async (req, res, next) => {
   if (!product) return next(new AppError("Product does not exist", 404));
 
   // Fetch related products
-  const related = await Product.find({
+  let related = await Product.find({
     // Exclude current id
     _id: { $ne: product._id },
-    // Match any shared category
-    category: { $in: product.category },
+    // Match any shared category or tag
+    $or: [{ category: { $in: product.category } }, { tag: product.tag }],
   }).limit(4);
+
+  // Check if related products were found
+  if (!related || related.length === 0)
+    related = await Product.find({ _id: { $ne: product._id } }).limit(4);
 
   // Send response
   res.status(200).json({
