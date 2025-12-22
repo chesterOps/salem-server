@@ -39,21 +39,43 @@ export default class ApiFeatures {
   }
 
   filter() {
-    // Clone the query parameters to avoid mutating the original object
+    // 1) Create a clean object
     const queryObj = { ...this.queryString };
-
-    // Fields that should not be used for filtering
     const excludedFields = ["page", "sort", "limit", "fields", "search"];
-
-    // Remove excluded fields from the query object
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    // Convert operators (gte, gt, lt, lte) to MongoDB's $ syntax
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
+    // 2) FIX: Manually handle the [gte] brackets if they aren't parsed
+    let formattedQuery: { [key: string]: any } = {};
 
-    // Apply the filter to the query
-    this.query = this.query.find(JSON.parse(queryStr));
+    Object.keys(queryObj).forEach((key) => {
+      // This regex finds keys like "price[gte]" and extracts "price" and "gte"
+      const match = key.match(/^(.+)\[(.+)\]$/);
+
+      if (match) {
+        const [_, field, operator] = match;
+        if (!formattedQuery[field]) formattedQuery[field] = {};
+        formattedQuery[field][`$${operator}`] = queryObj[key];
+      } else {
+        // Regular fields like difficulty=easy
+        formattedQuery[key] = queryObj[key];
+      }
+    });
+
+    // 3) Fallback for standard objects (if they are already nested)
+    if (
+      Object.keys(formattedQuery).length === 0 &&
+      Object.keys(queryObj).length > 0
+    ) {
+      let queryStr = JSON.stringify(queryObj);
+      queryStr = queryStr.replace(
+        /\b(gte|gt|lte|lt)\b/g,
+        (match) => `$${match}`
+      );
+      formattedQuery = JSON.parse(queryStr);
+    }
+
+    this.query = this.query.find(formattedQuery);
+
     return this;
   }
 

@@ -86,7 +86,9 @@ export const getProductsByCategory = catchAsync(async (req, res, next) => {
   if (!category) return next(new AppError("Category not found", 404));
 
   // Fetch products with that category
-  const products = await Product.find({ category: { $in: [category._id] } });
+  const products = await Product.find({
+    category: { $in: [category._id] },
+  }).sort({ createdAt: -1 });
 
   // Send response
   res.status(200).json({
